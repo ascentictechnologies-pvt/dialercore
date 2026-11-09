@@ -27,6 +27,8 @@
 #   -h, --help             this help
 set -Eeuo pipefail
 
+# /dev/tty exists even with no terminal attached (e.g. over ssh without -t); only opening it tells.
+has_tty() { { : < /dev/tty; } 2>/dev/null; }
 REPO="${DIALCORE_REPO:-ascentictechnologies-pvt/dialercore}"
 BASE_DIR=/opt/dialcore-installer
 STATE_DIR=/var/lib/dialcore-installer
@@ -80,7 +82,7 @@ if [[ -n "$EXTRA_ANSWERS" && ! -f "$EXTRA_ANSWERS" ]]; then die "answers file no
 # Prompts read the terminal: when piped into bash, stdin is the script itself.
 ask() { # ask VAR "Question" validator-regex
   local var="$1" q="$2" re="$3" reply
-  [[ -e /dev/tty ]] || die "$var is needed: pass it with --${var,,} (no terminal to ask on)"
+  has_tty || die "$var is needed: pass it with --${var,,} (no terminal to ask on)"
   while true; do
     read -r -p "$q: " reply < /dev/tty || die "no answer for $var"
     [[ "$reply" =~ $re ]] && break
@@ -102,7 +104,7 @@ saved() { [[ -f "$STATE_DIR/answers.env" ]] && sed -n "s/^$1=//p" "$STATE_DIR/an
 [[ -n "$TIMEZONE" ]] || TIMEZONE="$(saved TIMEZONE || true)"
 if [[ -z "$TIMEZONE" ]]; then
   TZ_DEFAULT="$(timedatectl show -p Timezone --value 2>/dev/null || echo Etc/UTC)"
-  [[ -e /dev/tty ]] && read -r -p "Time zone of the business (e.g. Asia/Kolkata) [$TZ_DEFAULT]: " TIMEZONE < /dev/tty || true
+  has_tty && read -r -p "Time zone of the business (e.g. Asia/Kolkata) [$TZ_DEFAULT]: " TIMEZONE < /dev/tty || true
   TIMEZONE="${TIMEZONE:-$TZ_DEFAULT}"
 fi
 [[ "$TIMEZONE" != *..* && -f "/usr/share/zoneinfo/$TIMEZONE" ]] || die "unknown time zone: $TIMEZONE (see: timedatectl list-timezones)"
@@ -154,7 +156,7 @@ say "installer ready in $BASE_DIR/$NAME"
 if [[ "$ACTION" != install ]]; then
   args=("$ACTION"); [[ "$ACTION" == resume ]] && args=(install --resume)
   ((VERBOSE)) && args+=(--verbose)
-  [[ -e /dev/tty ]] || die "$ACTION asks for confirmation: run it from a terminal"
+  has_tty || die "$ACTION asks for confirmation: run it from a terminal (ssh -t), or run $BASE_DIR/$NAME/dialcore-install.sh $ACTION --yes"
   say "running: dialcore-install.sh ${args[*]}"
   exec "$BASE_DIR/$NAME/dialcore-install.sh" "${args[@]}" < /dev/tty
 fi
