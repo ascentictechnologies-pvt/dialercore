@@ -171,6 +171,7 @@ cannot be read without it.
 | Undo everything | `sudo ./dialcore-install.sh rollback` (asks before deleting the database and backs it up first) |
 | Undo part of it | `sudo ./dialcore-install.sh rollback --to <step>`, then `install --resume` |
 | Kamailio tables missing, or `permission denied` for `asterisk_rt` / `kamailio_rw` in the PostgreSQL log | `sudo ./dialcore-install.sh db-repair` (creates the missing Kamailio tables, grants again, restarts the API and Kamailio; safe to repeat) |
+| The installer asks "PostgreSQL password for the user postgres" | This server's PostgreSQL was set to ask its `postgres` user for a password. Type it once; the installer reuses it for the rest of the run. Without a terminal, start the installer with `PGPASSWORD` set. |
 | Try without changing anything | add `--dry-run` |
 | API logs | `/opt/Ascentic/Dialer/BackEnd/logs/` and `journalctl -u dialcore-api -n 100` |
 | No call audio | Public IP answer and the RTP port range (10000–20000/UDP) on every firewall in front of the server |
