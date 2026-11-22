@@ -41,6 +41,7 @@ matches the server, check it against its `.sha256`, unpack it and run `sudo ./di
 | [dialcore-uninstall.sh](dialcore-uninstall.sh) | Standalone uninstaller |
 | [docs/DialCore-Installer-Support-Guide.pdf](docs/DialCore-Installer-Support-Guide.pdf) | Guide for support staff |
 | [docs/DialCore-User-Manual.pdf](docs/DialCore-User-Manual.pdf) | User manual (Platform Admin, Tenant Admin, Supervisor, Agent) |
+| [docs/DialCore-Admin-Guide.pdf](docs/DialCore-Admin-Guide.pdf) | Call Centre Admin Guide: how every function works (rules, defaults, limits, troubleshooting) |
 
 Each [release](https://github.com/ascentictechnologies-pvt/dialercore/releases) also has the installer
 bundle `dialcore-installer-<version>.tar.gz` with its `.sha256`.
