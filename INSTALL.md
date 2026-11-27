@@ -205,10 +205,13 @@ sudo ./dialcore-install.sh upgrade
 2. The new API is unpacked beside the running one and switched in; it updates the database schema when it
    starts. If it doesn't start, the previous API is put back automatically.
 3. The new web app replaces the old one (kept as `/opt/Ascentic/Dialer/Frontend.previous`).
-4. The database repair runs (missing Kamailio tables, database access for Asterisk and Kamailio).
+4. Kamailio and Asterisk get a small systemd addition (`/etc/systemd/system/<service>.service.d/10-dialcore-database.conf`):
+   they wait for PostgreSQL before starting and restart on their own if they stop. Without it, an automatic Ubuntu
+   update that restarts PostgreSQL could leave Kamailio down (agents' softphones can't register).
+5. The database repair runs (missing Kamailio tables, database access for Asterisk and Kamailio).
 
-**Not changed:** `dialcore.env` (keys, passwords, settings), nginx, Asterisk, Kamailio, certificates and the
-saved answers. The end of the run prints how to go back to the previous version.
+**Not changed:** `dialcore.env` (keys, passwords, settings), nginx, the Asterisk and Kamailio configuration,
+certificates and the saved answers. The end of the run prints how to go back to the previous version.
 
 `install` is for a new server: on an installed one it skips the finished steps, so it doesn't replace the
 API or web app.
